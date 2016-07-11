@@ -26,26 +26,26 @@ def generate_suite(suite, nodes, edges, exec_path):
         prev_node = exec_path[i]
         next_node = exec_path[i + 1]
         if str(nodes[prev_node]['label']).lower() == 'start':
-            test.keywords.create('Log', args=['测试开始'.decode('utf-8')])
+            test.keywords.create('Log', args=['测试开始'])
             e_label = edges['n0'][next_node]['label']
             if len(e_label.split('/')) > 1:
                 test.keywords.create(e_label.split('/')[0], args=[e_label.split('/')[1]])
             else:
                 test.keywords.create(edges['n0'][next_node]['label'])
-            test.keywords.create('Log', args=['当前的节点为: {}'.format(next_node).decode('utf-8')])
+            test.keywords.create('Log', args=['当前的节点为: {}'.format(next_node)])
             n_label = nodes[next_node]['label']
             if len(n_label.split('/')) > 1:
                 test.keywords.create(n_label.split('/')[0], args=[n_label.split('/')[1]])
             else:
                 test.keywords.create(n_label)
         else:
-            test.keywords.create('Log', args=['当前的向量为: {}'.format(edges[prev_node][next_node]['id']).decode('utf-8')])
+            test.keywords.create('Log', args=['当前的向量为: {}'.format(edges[prev_node][next_node]['id'])])
             e_label = edges[prev_node][next_node]['label']
             if len(e_label.split('/')) > 1:
                 test.keywords.create(e_label.split('/')[0], args=[e_label.split('/')[1]])
             else:
                 test.keywords.create(e_label)
-            test.keywords.create('Log', args=['当前的节点为: {}'.format(next_node).decode('utf-8')])
+            test.keywords.create('Log', args=['当前的节点为: {}'.format(next_node)])
             n_label = nodes[next_node]['label']
             if len(n_label.split('/')) > 1:
                 test.keywords.create(n_label.split('/')[0], args=[n_label.split('/')[1]])
@@ -136,12 +136,12 @@ def full_walker(file_path):
         generate_suite(suite[0], nodes, edges, exec_path)
 
     # 运行suite并回收报告
-    suite[0].run(output='../results/{}.xml'.format(suite[1]))
-    xml_files = [join('../results/', f) for f in listdir('../results/') if isfile(join('../results/', f))]
+    suite[0].run(output='results/{}.xml'.format(suite[1]))
+    xml_files = [join('results/', f) for f in listdir('results/') if isfile(join('results/', f))]
     ResultWriter(*xml_files) \
-        .write_results(log='../reports/{}_log.html'.format(suite[1])
-                       , report='../reports/{}_report.html'.format(suite[1])
-                       , output='../reports/{}_output.xml'.format(suite[1]))
+        .write_results(log='reports/{}_log.html'.format(suite[1])
+                       , report='reports/{}_report.html'.format(suite[1])
+                       , output='reports/{}_output.xml'.format(suite[1]))
 
 
 def specify_walker(file_path, walk_path):
@@ -171,17 +171,17 @@ def specify_walker(file_path, walk_path):
 def main():
     # 判断命令行参数
     if '--help' in sys.argv:
-        print 'example, specify a model file: python model_walker.py --mode random --coverage 100' \
-              ' --modelpath model_file.graphml\n'
-        print 'or specify a model path: python model_walker.py --mode random --coverage 100 --modelpath model_path\n'
-        print "or specify a walk path in model: python model_walker.py --mode random --coverage 100" \
-              " --modelpath model_file.graphml --walkpath ['n0', 'n1', 'n2', 'n7', 'n16', 'n23']\n"
-        print "or run full node walk: python model_walker.py --mode full --modelpath model_file.graphml\n"
-        print "or run specify node walk: python model_walker.py --mode specify --modelpath model_file.graphml" \
-              " ['n0', 'n1', 'n2', 'n7', 'n16', 'n24']"
+        print('example, specify a model file: python model_walker.py --mode random --coverage 100'
+              ' --modelpath model_file.graphml\n')
+        print('or specify a model path: python model_walker.py --mode random --coverage 100 --modelpath model_path\n')
+        print("or specify a walk path in model: python model_walker.py --mode random --coverage 100"
+              " --modelpath model_file.graphml --walkpath ['n0', 'n1', 'n2', 'n7', 'n16', 'n23']\n")
+        print("or run full node walk: python model_walker.py --mode full --modelpath model_file.graphml\n")
+        print("or run specify node walk: python model_walker.py --mode specify --modelpath model_file.graphml"
+              " ['n0', 'n1', 'n2', 'n7', 'n16', 'n24']")
         sys.exit()
     elif '--mode' not in sys.argv:
-        print 'need mode parameters'
+        print('need mode parameters')
         sys.exit()
     elif '--mode' in sys.argv:
         for i in range(len(sys.argv)):
@@ -189,14 +189,14 @@ def main():
                 try:
                     mode = sys.argv[i + 1]
                 except IndexError:
-                    print 'please give a value to --mode parameter'
+                    print('please give a value to --mode parameter')
                     sys.exit()
                 if str(sys.argv[i + 1]).startswith('--'):
-                    print 'please give a value to --mode parameter'
+                    print('please give a value to --mode parameter')
                     sys.exit()
                 elif mode == 'random':
                     if '--coverage' not in sys.argv or '--modelpath' not in sys.argv:
-                        print 'need coverage and modelpath parameters'
+                        print('need coverage and modelpath parameters')
                         sys.exit()
                     else:
                         for i in range(len(sys.argv)):
@@ -204,30 +204,30 @@ def main():
                                 try:
                                     coverage = sys.argv[i + 1]
                                 except IndexError:
-                                    print 'please give a value to --coverage parameter'
+                                    print('please give a value to --coverage parameter')
                                     sys.exit()
                                 if str(sys.argv[i + 1]).startswith('--'):
-                                    print 'please give a value to --coverage parameter'
+                                    print('please give a value to --coverage parameter')
                                     sys.exit()
                                 try:
                                     coverage = int(coverage)
                                 except ValueError:
-                                    print 'the value given for coverage is not a number'
+                                    print('the value given for coverage is not a number')
                                     sys.exit()
                                 if coverage not in range(1, 101):
-                                    print 'the value given for coverage should be in 1 to 100'
+                                    print('the value given for coverage should be in 1 to 100')
                                     sys.exit()
                             elif sys.argv[i] == '--modelpath':
                                 try:
                                     model_path = sys.argv[i + 1]
                                 except IndexError:
-                                    print 'please give a value to --modelpath parameter'
+                                    print('please give a value to --modelpath parameter')
                                     sys.exit()
                                 if str(sys.argv[i + 1]).startswith('--'):
-                                    print 'please give a value to --modelpath parameter'
+                                    print('please give a value to --modelpath parameter')
                                     sys.exit()
                                 if os.path.exists(model_path) is False:
-                                    print "modelpath doesn't exist"
+                                    print("modelpath doesn't exist")
                                     sys.exit()
                         if isfile(model_path):
                             random_walker(model_path, coverage)
@@ -238,7 +238,7 @@ def main():
                                 random_walker(model_file, coverage)
                 elif mode == 'full':
                     if '--modelpath' not in sys.argv:
-                        print 'need coverage and modelpath parameters'
+                        print('need coverage and modelpath parameters')
                         sys.exit()
                     else:
                         for i in range(len(sys.argv)):
@@ -246,13 +246,13 @@ def main():
                                 try:
                                     model_path = sys.argv[i + 1]
                                 except IndexError:
-                                    print 'please give a value to --modelpath parameter'
+                                    print('please give a value to --modelpath parameter')
                                     sys.exit()
                                 if str(sys.argv[i + 1]).startswith('--'):
-                                    print 'please give a value to --modelpath parameter'
+                                    print('please give a value to --modelpath parameter')
                                     sys.exit()
                                 if os.path.exists(model_path) is False:
-                                    print "modelpath doesn't exist"
+                                    print("modelpath doesn't exist")
                                     sys.exit()
                         if isfile(model_path):
                             full_walker(model_path)
@@ -263,7 +263,7 @@ def main():
                                 full_walker(model_file)
                 elif mode == 'specify':
                     if '--modelpath' not in sys.argv:
-                        print 'need coverage and modelpath parameters'
+                        print('need coverage and modelpath parameters')
                         sys.exit()
                     else:
                         for i in range(len(sys.argv)):
@@ -271,22 +271,22 @@ def main():
                                 try:
                                     model_path = sys.argv[i + 1]
                                 except IndexError:
-                                    print 'please give a value to --modelpath parameter'
+                                    print('please give a value to --modelpath parameter')
                                     sys.exit()
                                 if str(sys.argv[i + 1]).startswith('--'):
-                                    print 'please give a value to --modelpath parameter'
+                                    print('please give a value to --modelpath parameter')
                                     sys.exit()
                                 if os.path.exists(model_path) is False:
-                                    print "modelpath doesn't exist"
+                                    print("modelpath doesn't exist")
                                     sys.exit()
                             elif sys.argv[i] == '--walkpath':
                                 try:
                                     walk_path = sys.argv[i + 1:]
                                 except IndexError:
-                                    print 'please give a value to --walkpath parameter'
+                                    print('please give a value to --walkpath parameter')
                                     sys.exit()
                                 if str(sys.argv[i + 1:]).startswith('--'):
-                                    print 'please give a value to --modelpath parameter'
+                                    print('please give a value to --modelpath parameter')
                                     sys.exit()
                         if isfile(model_path):
                             specify_walker(model_path, walk_path)

@@ -35,8 +35,8 @@ def get_failed_test_cases(xml_path):
 
 def run(suite_path, test_case, results_dir):
     suite = TestSuiteBuilder().build(suite_path)
-    suite.configure(include_tests=test_case.decode('utf-8'))
-    result = suite.run(output='{0}/{1}.xml'.format(results_dir, test_case).decode('utf-8')
+    suite.configure(include_tests=test_case)
+    result = suite.run(output='{0}/{1}.xml'.format(results_dir, test_case)
                        , non_critical_tags='non-critical')
     return {'passed': result.statistics.suite.stat.passed, 'failed': result.statistics.suite.stat.failed}
 
@@ -44,8 +44,8 @@ def run(suite_path, test_case, results_dir):
 def main(processes=8, suite_path='.', mode='all'):
     # 判断命令行参数
     if '--help' in sys.argv:
-        print 'example: python model_walker.py --processes 8 --suitepath . --mode all\n'
-        print 'or you can just type: python model_walker.py, default processes=8, suitepath=., mode=all'
+        print('example: python model_walker.py --processes 8 --suitepath . --mode all\n')
+        print('or you can just type: python model_walker.py, default processes=8, suitepath=., mode=all')
         sys.exit()
     else:
         for i in range(len(sys.argv)):
@@ -53,36 +53,36 @@ def main(processes=8, suite_path='.', mode='all'):
                 try:
                     processes = sys.argv[i + 1]
                 except IndexError:
-                    print 'please give a value to --processes parameter'
+                    print('please give a value to --processes parameter')
                     sys.exit()
                 if str(sys.argv[i + 1]).startswith('--'):
-                    print 'please give a value to --processes parameter'
+                    print('please give a value to --processes parameter')
                     sys.exit()
                 try:
                     processes = int(processes)
                 except ValueError:
-                    print 'the value given for processes is not a number'
+                    print('the value given for processes is not a number')
                     sys.exit()
             elif sys.argv[i] == '--suitepath':
                 try:
                     suite_path = sys.argv[i + 1]
                 except IndexError:
-                    print 'please give a value to --suitepath parameter'
+                    print('please give a value to --suitepath parameter')
                     sys.exit()
                 if str(sys.argv[i + 1]).startswith('--'):
-                    print 'please give a value to --suitepath parameter'
+                    print('please give a value to --suitepath parameter')
                     sys.exit()
                 if os.path.exists(suite_path) is False:
-                    print "suitepath doesn't exist"
+                    print("suitepath doesn't exist")
                     sys.exit()
             elif sys.argv[i] == '--mode':
                 try:
                     mode = sys.argv[i + 1]
                 except IndexError:
-                    print 'please give a value to --mode parameter'
+                    print('please give a value to --mode parameter')
                     sys.exit()
                 if str(sys.argv[i + 1]).startswith('--'):
-                    print 'please give a value to --mode parameter'
+                    print('please give a value to --mode parameter')
                     sys.exit()
     passed = 0
     failed = 0
@@ -113,8 +113,8 @@ def main(processes=8, suite_path='.', mode='all'):
                        , log='{}/log.html'.format(reports_dir)
                        , report='{}/report.html'.format(reports_dir)
                        , output='{}/output.xml'.format(reports_dir))
-    print 'start_time: ' + str(start_time)
-    print 'end_time: ' + str(end_time)
+    print('start_time: ' + str(start_time))
+    print('end_time: ' + str(end_time))
 
 if __name__ == '__main__':
     main()
