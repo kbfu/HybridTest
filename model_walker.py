@@ -7,9 +7,11 @@ import os
 from robot.api import TestSuite
 from robot.reporting import ResultWriter
 import random
-import sys
 import networkx as nx
 from WalkerConfig import walker_config
+import argparse
+
+__author__ = 'zhangdonghao'
 
 
 def init_robot(file_path):
@@ -53,7 +55,7 @@ def generate_suite(suite, nodes, edges, exec_path):
                 test.keywords.create(n_label)
 
 
-def random_walker(file_path, coverage):
+def random_walker(file_path, coverage=100):
     suite = init_robot(file_path)
 
     g = graphml.read_graphml(file_path)
@@ -154,8 +156,9 @@ def specify_walker(file_path, walk_path):
     nodes = g.node
 
     sorted_path = []
+    walk_path = walk_path.split(',')
     for path in walk_path:
-        temp = path.replace('[', '').replace(']', '').replace(',', '')
+        temp = path.replace('[', '').replace(']', '').replace(',', '').replace("'", '').strip()
         sorted_path.append(temp)
     generate_suite(suite[0], nodes, edges, sorted_path)
 
@@ -170,131 +173,62 @@ def specify_walker(file_path, walk_path):
 
 def main():
     # 判断命令行参数
-    if '--help' in sys.argv:
-        print('example, specify a model file: python model_walker.py --mode random --coverage 100'
-              ' --modelpath model_file.graphml\n')
-        print('or specify a model path: python model_walker.py --mode random --coverage 100 --modelpath model_path\n')
-        print("or specify a walk path in model: python model_walker.py --mode random --coverage 100"
-              " --modelpath model_file.graphml --walkpath ['n0', 'n1', 'n2', 'n7', 'n16', 'n23']\n")
-        print("or run full node walk: python model_walker.py --mode full --modelpath model_file.graphml\n")
-        print("or run specify node walk: python model_walker.py --mode specify --modelpath model_file.graphml"
-              " ['n0', 'n1', 'n2', 'n7', 'n16', 'n24']")
-        sys.exit()
-    elif '--mode' not in sys.argv:
-        print('need mode parameters')
-        sys.exit()
-    elif '--mode' in sys.argv:
-        for i in range(len(sys.argv)):
-            if sys.argv[i] == '--mode':
-                try:
-                    mode = sys.argv[i + 1]
-                except IndexError:
-                    print('please give a value to --mode parameter')
-                    sys.exit()
-                if str(sys.argv[i + 1]).startswith('--'):
-                    print('please give a value to --mode parameter')
-                    sys.exit()
-                elif mode == 'random':
-                    if '--coverage' not in sys.argv or '--modelpath' not in sys.argv:
-                        print('need coverage and modelpath parameters')
-                        sys.exit()
-                    else:
-                        for i in range(len(sys.argv)):
-                            if sys.argv[i] == '--coverage':
-                                try:
-                                    coverage = sys.argv[i + 1]
-                                except IndexError:
-                                    print('please give a value to --coverage parameter')
-                                    sys.exit()
-                                if str(sys.argv[i + 1]).startswith('--'):
-                                    print('please give a value to --coverage parameter')
-                                    sys.exit()
-                                try:
-                                    coverage = int(coverage)
-                                except ValueError:
-                                    print('the value given for coverage is not a number')
-                                    sys.exit()
-                                if coverage not in range(1, 101):
-                                    print('the value given for coverage should be in 1 to 100')
-                                    sys.exit()
-                            elif sys.argv[i] == '--modelpath':
-                                try:
-                                    model_path = sys.argv[i + 1]
-                                except IndexError:
-                                    print('please give a value to --modelpath parameter')
-                                    sys.exit()
-                                if str(sys.argv[i + 1]).startswith('--'):
-                                    print('please give a value to --modelpath parameter')
-                                    sys.exit()
-                                if os.path.exists(model_path) is False:
-                                    print("modelpath doesn't exist")
-                                    sys.exit()
-                        if isfile(model_path):
-                            random_walker(model_path, coverage)
-                        else:
-                            model_files = [join(model_path, f)
-                                           for f in listdir(model_path) if isfile(join(model_path, f))]
-                            for model_file in model_files:
-                                random_walker(model_file, coverage)
-                elif mode == 'full':
-                    if '--modelpath' not in sys.argv:
-                        print('need coverage and modelpath parameters')
-                        sys.exit()
-                    else:
-                        for i in range(len(sys.argv)):
-                            if sys.argv[i] == '--modelpath':
-                                try:
-                                    model_path = sys.argv[i + 1]
-                                except IndexError:
-                                    print('please give a value to --modelpath parameter')
-                                    sys.exit()
-                                if str(sys.argv[i + 1]).startswith('--'):
-                                    print('please give a value to --modelpath parameter')
-                                    sys.exit()
-                                if os.path.exists(model_path) is False:
-                                    print("modelpath doesn't exist")
-                                    sys.exit()
-                        if isfile(model_path):
-                            full_walker(model_path)
-                        else:
-                            model_files = [join(model_path, f)
-                                           for f in listdir(model_path) if isfile(join(model_path, f))]
-                            for model_file in model_files:
-                                full_walker(model_file)
-                elif mode == 'specify':
-                    if '--modelpath' not in sys.argv:
-                        print('need coverage and modelpath parameters')
-                        sys.exit()
-                    else:
-                        for i in range(len(sys.argv)):
-                            if sys.argv[i] == '--modelpath':
-                                try:
-                                    model_path = sys.argv[i + 1]
-                                except IndexError:
-                                    print('please give a value to --modelpath parameter')
-                                    sys.exit()
-                                if str(sys.argv[i + 1]).startswith('--'):
-                                    print('please give a value to --modelpath parameter')
-                                    sys.exit()
-                                if os.path.exists(model_path) is False:
-                                    print("modelpath doesn't exist")
-                                    sys.exit()
-                            elif sys.argv[i] == '--walkpath':
-                                try:
-                                    walk_path = sys.argv[i + 1:]
-                                except IndexError:
-                                    print('please give a value to --walkpath parameter')
-                                    sys.exit()
-                                if str(sys.argv[i + 1:]).startswith('--'):
-                                    print('please give a value to --modelpath parameter')
-                                    sys.exit()
-                        if isfile(model_path):
-                            specify_walker(model_path, walk_path)
-                        else:
-                            model_files = [join(model_path, f)
-                                           for f in listdir(model_path) if isfile(join(model_path, f))]
-                            for model_file in model_files:
-                                specify_walker(model_file, walk_path)
+    parser = argparse.ArgumentParser(description='Model walker, including random, full and specify mode.')
+    parser.add_argument('--mode', '-m', nargs=1, type=str, help='assign a mode: random, full or specify.'
+                        , required=True)
+    parser.add_argument('--coverage', '-c', nargs=1, type=int, help='test node coverage,'
+                                                                    ' optional when mode is random. default=100')
+    parser.add_argument('--modelpath', '-mp', nargs=1, type=str, help='model path, can be a file or folder'
+                        , required=True)
+    parser.add_argument('--walkpath', '-w', nargs='+', help='walk path, specify a fixed path,'
+                                                            ' required when mode is specify. Note: use double quote if'
+                                                            'spaces exist in argument.')
+    args = parser.parse_args()
+    mode = args.mode[0]
+    try:
+        coverage = args.coverage[0]
+    except TypeError:
+        coverage = None
+    model_path = args.modelpath[0]
+    try:
+        walk_path = args.walkpath[0]
+    except TypeError:
+        walk_path = None
+
+    if mode == 'random' and coverage is not None:
+        if isfile(model_path):
+            random_walker(model_path, coverage)
+        else:
+            model_files = [join(model_path, f)
+                           for f in listdir(model_path) if isfile(join(model_path, f))]
+            for model_file in model_files:
+                random_walker(model_file, coverage)
+    elif mode == 'random' and coverage is None:
+        if isfile(model_path):
+            random_walker(model_path)
+        else:
+            model_files = [join(model_path, f)
+                           for f in listdir(model_path) if isfile(join(model_path, f))]
+            for model_file in model_files:
+                random_walker(model_file)
+    elif mode == 'full':
+        if isfile(model_path):
+            full_walker(model_path)
+        else:
+            model_files = [join(model_path, f)
+                           for f in listdir(model_path) if isfile(join(model_path, f))]
+            for model_file in model_files:
+                full_walker(model_file)
+    elif mode == 'specify' and walk_path is None:
+        parser.error('mode specify need walkpath parameter')
+    elif mode == 'specify' and walk_path is not None:
+        if isfile(model_path):
+            specify_walker(model_path, walk_path)
+        else:
+            model_files = [join(model_path, f)
+                           for f in listdir(model_path) if isfile(join(model_path, f))]
+            for model_file in model_files:
+                specify_walker(model_file, walk_path)
 
 
 if __name__ == '__main__':

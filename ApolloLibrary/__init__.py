@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from apollo import Apollo
+from .apollo import Apollo
 
 
 class ApolloLibrary(Apollo):
