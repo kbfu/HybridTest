@@ -9,7 +9,6 @@ from os import listdir
 from os.path import isfile, join
 import datetime
 import shutil
-import sys
 from robot.result import ExecutionResult
 import time
 
@@ -36,7 +35,7 @@ def get_failed_test_cases(xml_path):
 
 def run(suite_path, test_case, results_dir):
     suite = TestSuiteBuilder().build(suite_path)
-    suite.configure(include_tests=test_case.decode('utf-8'))
+    suite.configure(include_tests=test_case)
     result = suite.run(output='{0}/{1}.xml'.format(results_dir, test_case)
                        , non_critical_tags='non-critical')
     return {'passed': result.statistics.suite.stat.passed, 'failed': result.statistics.suite.stat.failed}
